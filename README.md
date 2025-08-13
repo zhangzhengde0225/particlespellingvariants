@@ -12,7 +12,7 @@ A Python library for generating and managing particle spelling variants using PD
 ```
 particlespellingvariants/
    main.py                 # Main script
-   generator.py            # Particle variant generator
+   generator.py            # Particle variant generator (change `_call_llm_api()` if you need)
    data_merger.py          # Data merger
    particle_variants.json  # Data storage
    README.md              # Documentation
@@ -21,7 +21,7 @@ particlespellingvariants/
 ## Dependencies
 
 ```bash
-pip install pdg hepai particle
+pip install pdg particle hepai
 ```
 
 ## Usage
@@ -50,7 +50,7 @@ python main.py --mode merge --input old_data.json --new-data new_data.json --out
 
 ```bash
 # Generate new data and merge with existing
-python main.py --mode both --input particle_variants.json --output final_variants.json
+python main.py --mode both --mcids 321 -321 --input particle_variants.json --output final_variants.json
 ```
 
 ## Data Format
