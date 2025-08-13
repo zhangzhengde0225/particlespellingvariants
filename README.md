@@ -12,10 +12,11 @@ A Python library for generating and managing particle spelling variants using PD
 ```
 particlespellingvariants/
    main.py                 # Main script
-   generator.py            # Particle variant generator (change `_call_llm_api()` if you need)
-   data_merger.py          # Data merger
-   particle_variants.json  # Data storage
-   README.md              # Documentation
+   generator.py            # Particle variant generator (modify `_call_llm_api()` if needed)
+   data_merger.py          # Data merging tool
+   particle_variants.json  # Data storage file
+   README.md               # Documentation
+   Usage/Particle.py       # Used to create Particle object
 ```
 
 ## Dependencies
