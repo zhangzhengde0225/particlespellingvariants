@@ -8,8 +8,8 @@ import os
 import sys
 from typing import List, Optional
 
-from generator import ParticleVariantGenerator, get_standard_mcids
-from data_merger import ParticleDataMerger
+from ParSV.data.generator import ParticleVariantGenerator, get_standard_mcids
+from ParSV.data.data_merger import ParticleDataMerger
 
 
 def main():

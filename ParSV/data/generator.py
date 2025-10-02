@@ -12,7 +12,16 @@ import pdg
 from hepai import HepAI
 from particle import Particle as ExternalParticle
 
-from utils import safe_json_loads, normalize_particle_name
+from pathlib import Path
+here = Path(__file__).parent.resolve()
+
+try:
+    from ParSV import __version__
+except ImportError:
+    sys.path.append(str(here.parent.parent))
+    from ParSV import __version__
+    
+from ParSV.utils import safe_json_loads, normalize_particle_name
 
 
 class ParticleVariantGenerator:

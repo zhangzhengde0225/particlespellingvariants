@@ -2,10 +2,15 @@
 
 A Python library for generating and managing particle spelling variants using PDG database and AI API.
 
+粒子拼写变体及物理性质工具
+
+同一个粒子或共振态有不同的拼写方法，本工具适配了692种粒子的编程名、LaTex名、EvtGen名、HTML名、Unicode名以及其他别名，基本涵盖粒子名称。使用本工具，可根据粒子名称准确获取某个粒子的基本标识、多种拼写变体、物理属性、量子数、类型标识、衰变分支比等信息，为物理分析智能体提供支持。
+
 ## Features
 
-1. **Generate variants**: Query by MCID from API to generate particle variants
+1. **Generate variants**: Query by MCID ([Monte Carlo ID](./docs/what_is_MCID.md)) from API to generate particle variants
 2. **Merge data**: Merge existing and newly generated MCID data
+3. **MCP Supported**: Can be used as a plugin for large language models via Model Context Protocol (MCP)
 
 ## File Structure
 

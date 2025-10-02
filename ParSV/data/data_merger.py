@@ -3,9 +3,16 @@
 合并新旧拼写变体数据并按mcid绝对值排序
 """
 
-import json
+import json, sys
 from typing import Dict, List, Any
+from pathlib import Path
+here = Path(__file__).parent.resolve()
 
+try:
+    from ParSV import __version__
+except ImportError:
+    sys.path.append(str(here.parent.parent))
+    from ParSV import __version__
 
 class ParticleDataMerger:
     def __init__(self):
@@ -171,10 +178,10 @@ if __name__ == "__main__":
     merger = ParticleDataMerger()
     
     # 合并示例
-    old_file = "particle_variants.json"
-    new_file = "new_variants.json"  
-    output_file = "merged_variants.json"
-    
+    old_file = f"{here}/particle_variants.json"
+    new_file = f"{here}/new_variants.json"
+    output_file = f"{here}/merged_variants.json"
+
     if merger.merge_files(old_file, new_file, output_file):
         # 验证结果
         merged_data = merger.load_json(output_file)

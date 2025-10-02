@@ -1,0 +1,6 @@
+{
+    "mcpServers": {
+        "particle_name_to_properties": {
+            "url": "https://aiapi.ihep.ac.cn/apiv2/mcp/md-648de797-3c7/sse",
+            "transport":"sse"
+}}}

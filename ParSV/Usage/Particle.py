@@ -1,6 +1,22 @@
-import json, pdg
+import json, pdg, sys
 from typing import Dict
 from particle import Particle as Particle_external
+
+from pathlib import Path
+here = Path(__file__).parent.resolve()
+
+try:
+    from ParSV import __version__
+except ImportError:
+    sys.path.append(str(here.parent.parent))
+    from ParSV import __version__
+
+try:
+    from ParSV.worker._response_value_object import convert_branching_fractions_list, convert_generator_to_list
+except ImportError:
+    sys.path.append(str(here.parent))
+    from ParSV.worker._response_value_object import convert_branching_fractions_list, convert_generator_to_list
+
 
 class Particle:
     _file_cache = None
@@ -26,6 +42,7 @@ class Particle:
 
     def _initialize_from_local_db(self, item):
         """从本地数据库初始化基本属性"""
+        # 基本标识信息
         self.name = item.get("name", "unknown")
         self.mcid = item.get("mcid", 0)
         self.programmatic_name = item.get("programmatic_name", str(self.mcid))
@@ -34,30 +51,39 @@ class Particle:
         self.html_name = item.get("html_name", str(self.mcid))
         self.unicode_name = item.get("unicode_name", str(self.mcid))
 
-        # 设置默认值
-        self.branching_fractions = item.get('branching_fractions', None) # list
+        # 物理属性
         self.charge = item.get('charge', None) # double
-        self.exclusive_branching_fractions = item.get('exclusive_branching_fractions', None) # list
-        self.has_lifetime_entry = item.get('has_lifetime_entry', None) # bool
-        self.has_mass_entry = item.get('has_mass_entry', None) # bool
-        self.has_width_entry = item.get('has_width_entry', None) # bool
-        self.inclusive_branching_fractions = item.get('inclusive_branching_fractions', None) # list
-        self.is_baryon = item.get('is_baryon', None) # bool
-        self.is_boson = item.get('is_boson', None) # bool
-        self.is_lepton = item.get('is_lepton', None) # bool
-        self.is_meson = item.get('is_meson', None) # bool
-        self.is_quark = item.get('is_quark', None) # bool
-        self.lifetime = item.get('lifetime', None)
-        self.lifetime_err = item.get('lifetime_err', None)
         self.mass = item.get('mass', None)
         self.mass_err = item.get('mass_err', None)
+        self.lifetime = item.get('lifetime', None)
+        self.lifetime_err = item.get('lifetime_err', None)
+        self.width = item.get('width', None)
+        self.width_err = item.get('width_err', None)
+        
+        # 量子数
         self.quantum_C = item.get('quantum_C', None)
         self.quantum_G = item.get('quantum_G', None)
         self.quantum_I = item.get('quantum_I', None)
         self.quantum_J = item.get('quantum_J', None)
         self.quantum_P = item.get('quantum_P', None)
-        self.width = item.get('width', None)
-        self.width_err = item.get('width_err', None)
+        
+        # 粒子类型标识
+        self.is_baryon = item.get('is_baryon', None) # bool
+        self.is_boson = item.get('is_boson', None) # bool
+        self.is_lepton = item.get('is_lepton', None) # bool
+        self.is_meson = item.get('is_meson', None) # bool
+        self.is_quark = item.get('is_quark', None) # bool
+        
+        # 衰变分支比
+        self.branching_fractions = item.get('branching_fractions', None) # list
+        self.exclusive_branching_fractions = item.get('exclusive_branching_fractions', None) # list
+        self.inclusive_branching_fractions = item.get('inclusive_branching_fractions', None) # list
+        
+        # 其他标识
+        self.has_lifetime_entry = item.get('has_lifetime_entry', None) # bool
+        self.has_mass_entry = item.get('has_mass_entry', None) # bool
+        self.has_width_entry = item.get('has_width_entry', None) # bool
+        
 
     def _initialize_from_external_api(self):
         """从外部API获取更多属性"""
@@ -66,14 +92,24 @@ class Particle:
 
         # 逐个属性判断并获取
         if self.branching_fractions is None:
-            self.branching_fractions = particle.branching_fractions()
+            # bf_raw = particle.branching_fractions()
+            # self.branching_fractions = convert_branching_fractions_list(bf_raw)
+            bf_raw = particle.branching_fractions()
+            bf_list = convert_generator_to_list(bf_raw)
+            self.branching_fractions = bf_list
+            
 
         if self.charge is None:
             self.charge = particle.charge
 
         if self.exclusive_branching_fractions is None:
-            self.exclusive_branching_fractions = particle.exclusive_branching_fractions()
-
+            # ebf_raw = particle.exclusive_branching_fractions()
+            # self.exclusive_branching_fractions = convert_branching_fractions_list(ebf_raw)
+            # self.exclusive_branching_fractions = particle.exclusive_branching_fractions()
+            ebf_raw = particle.exclusive_branching_fractions()
+            ebf_list = convert_generator_to_list(ebf_raw)
+            self.exclusive_branching_fractions = ebf_list
+            
         if self.has_lifetime_entry is None:
             self.has_lifetime_entry = particle.has_lifetime_entry
 
@@ -84,8 +120,13 @@ class Particle:
             self.has_width_entry = particle.has_width_entry
 
         if self.inclusive_branching_fractions is None:
-            self.inclusive_branching_fractions = particle.inclusive_branching_fractions()
-
+            # ibf_raw = particle.inclusive_branching_fractions()
+            # self.inclusive_branching_fractions = convert_branching_fractions_list(ibf_raw)
+            # self.inclusive_branching_fractions = particle.inclusive_branching_fractions()
+            ibf_raw = particle.inclusive_branching_fractions()
+            ibf_list = convert_generator_to_list(ibf_raw)
+            self.inclusive_branching_fractions = ibf_list
+            
         if self.is_baryon is None:
             self.is_baryon = particle.is_baryon
 
@@ -152,7 +193,7 @@ class Particle:
     def match_particle_name(name: str) -> Dict:
         """模拟从本地数据库匹配粒子名称"""
         if Particle._file_cache is None:
-            with open("../particle_variants.json", "r") as f:
+            with open(f"{here.parent}/data/particle_variants.json", "r") as f:
                 Particle._file_cache = json.load(f)
       
         for item in Particle._file_cache:
